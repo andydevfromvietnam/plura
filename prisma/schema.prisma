@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -91,9 +91,9 @@ model User {
   avatarUrl     String         @map("avatar_url") @db.Text
   email         String         @unique
   role          Role           @default(SUBACCOUNT_USER)
-  agencyId      String         @map("agency_id")
+  agencyId      String?         @map("agency_id")
   agency        Agency?        @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  permission    Permission[]
+  permissions   Permission[]
   tickets       Ticket[]
   notifications Notification[]
   updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
@@ -105,7 +105,7 @@ model User {
 model Agency {
   id               String                @id @default(uuid())
   connectAccountId String?               @default("") @map("connect_account_id")
-  customerId       String                @default("") @map("customer_id")
+  // customerId       String                @default("") @map("customer_id")
   name             String
   agencyLogo       String                @map("agency_logo") @db.Text
   companyEmail     String                @map("company_email") @db.Text
@@ -115,9 +115,10 @@ model Agency {
   city             String
   zipCode          String                @map("zip_code")
   state            String
+  country          String
   goal             Int                   @default(5)
   users            User[]
-  subaccounts      SubAccount[]
+  subAccount       SubAccount[]
   sidebarOptions   AgencySidebarOption[]
   invitations      Invitation[]
   notifications    Notification[]
@@ -126,7 +127,6 @@ model Agency {
   owners           Owner[]
   createdAt        DateTime              @default(now()) @map("created_at")
   updatedAt        DateTime              @default(now()) @updatedAt @map("updated_at")
-  ownerId          String
 }
 
 model Owner {
@@ -333,7 +333,7 @@ model ClassName {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
   funnelId   String
-  customData String?  @map("custom_data") @db.LongText
+  customData String?  @map("custom_data") @db.Text
   funnel     Funnel   @relation(fields: [funnelId], references: [id], onDelete: Cascade)
 
   @@index([funnelId])
@@ -344,7 +344,7 @@ model FunnelPage {
   name         String
   pathName     String   @default("")
   visits       Int      @default(0)
-  content      String?  @db.LongText
+  content      String?  @db.Text
   order        Int
   previewImage String?  @map("preview_image")
   funnelId     String   @map("funnel_id")
@@ -383,7 +383,7 @@ model SubAccountSidebarOption {
 
 model Invitation {
   id       String           @id @default(uuid())
-  email    String
+  email    String           @unique
   role     Role
   status   InvitationStatus @default(PENDING)
   agencyId String           @map("agency_id")
@@ -401,7 +401,7 @@ model Notification {
   subAccountId String     @map("sub_account_id")
   userId       String     @map("user_id")
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subAccount   SubAccount @relation(fields: [subAccountId], references: [id], onDelete: Cascade)
+  subAccount   SubAccount? @relation(fields: [subAccountId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
 

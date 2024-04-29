@@ -1,6 +1,16 @@
 {
-    "cSpell.words": [
-        "datasource",
-        "SUBACCOUNT"
-    ]
+  "cSpell.words": [
+    "clsx",
+    "datasource",
+    "nextjs",
+    "Plura",
+    "SUBACCOUNT",
+    "tailwindcss",
+    "trpc",
+    "uploadthing",
+    "utfs"
+  ],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
 }
